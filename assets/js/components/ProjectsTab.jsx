@@ -90,13 +90,13 @@ export default function ProjectsTab() {
     <div className="tab-pane fade show active" id="projects-tab" role="tabpanel">
       <div className="mb-4">
         <button 
-          className="btn-admin-add"
+          className="btn btn-success"
           onClick={() => {
             setEditingProject(null);
             setShowForm(true);
           }}
         >
-          Ajouter un projet
+          ➕ Ajouter un projet
         </button>
       </div>
 

@@ -40,6 +40,12 @@ class Project
     #[Groups(['project:read'])]
     private ?string $demoLink = null;
 
+    public function __construct()
+    {
+        $this->technologies = [];
+        $this->images = [];
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,7 +75,7 @@ class Project
 
     public function getTechnologies(): array
     {
-        return $this->technologies;
+        return $this->technologies ?? [];
     }
 
     public function setTechnologies(array $technologies): static
@@ -80,7 +86,7 @@ class Project
 
     public function getImages(): array
     {
-        return $this->images;
+        return $this->images ?? [];
     }
 
     public function setImages(array $images): static

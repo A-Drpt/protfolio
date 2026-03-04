@@ -6,16 +6,16 @@
 <div class="container my-5">
     <h1 class="mb-4">{{ project.title }}</h1>
 
-    {% if project.images|length > 0 %}
+    {% if project.getImages()|length > 0 %}
         <div id="projectCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
             <div class="carousel-inner">
-                {% for image in project.images %}
+                {% for image in project.getImages() %}
                     <div class="carousel-item {% if loop.first %}active{% endif %}">
                         <img src="{{ image }}" class="d-block w-100" alt="{{ project.title }}" style="max-height: 500px; object-fit: contain;">
                     </div>
                 {% endfor %}
             </div>
-            {% if project.images|length > 1 %}
+            {% if project.getImages()|length > 1 %}
                 <button class="carousel-control-prev" type="button" data-bs-target="#projectCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Précédent</span>
@@ -38,8 +38,8 @@
                 <div class="card-body">
                     <h5 class="card-title">Technologies utilisées</h5>
                     <div class="mb-3">
-                        {% for tech in project.technologies %}
-                            <span class="badge bg-primary me-1 mb-1">{{ tech }}</span>
+                        {% for tech in project.getTechnologies() %}
+                            <span class="badge bg-success me-1 mb-1">{{ tech }}</span>
                         {% endfor %}
                     </div>
 
@@ -51,7 +51,7 @@
                             </a>
                         {% endif %}
                         {% if project.demoLink %}
-                            <a href="{{ project.demoLink }}" target="_blank" class="btn btn-primary">
+                            <a href="{{ project.demoLink }}" target="_blank" class="btn btn-success">
                                 <i class="bi bi-box-arrow-up-right"></i> Voir la démo
                             </a>
                         {% endif %}

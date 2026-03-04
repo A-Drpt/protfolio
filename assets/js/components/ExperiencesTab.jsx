@@ -87,18 +87,28 @@ export default function ExperiencesTab() {
   };
 
   return (
-    <div className="tab-pane fade" id="experiences-tab" role="tabpanel">
+    <div className="tab-pane active fade show" id="experiences-tab" role="tabpanel" aria-labelledby="experiences-tab-button">
       <div className="mb-4">
         <button 
-          className="btn-admin-add"
+          className="btn btn-success"
           onClick={() => {
             setEditingExperience(null);
             setShowForm(true);
           }}
         >
-          Ajouter une expérience
+          ➕ Ajouter une expérience
         </button>
       </div>
+
+      {experiences.length === 0 ? (
+        <div className="alert alert-info">Aucune expérience. Cliquez sur "Ajouter une expérience" pour en créer une.</div>
+      ) : (
+        <ExperienceList 
+          experiences={experiences}
+          onEdit={handleEdit}
+          onDelete={(experience) => setExperienceToDelete(experience)}
+        />
+      )}
 
       <AdminModal
         isOpen={showForm}
@@ -118,12 +128,6 @@ export default function ExperiencesTab() {
         message={experienceToDelete ? `Voulez-vous vraiment supprimer « ${experienceToDelete.title} » ?` : ''}
         onConfirm={handleDelete}
         onCancel={() => setExperienceToDelete(null)}
-      />
-
-      <ExperienceList 
-        experiences={experiences}
-        onEdit={handleEdit}
-        onDelete={(experience) => setExperienceToDelete(experience)}
       />
     </div>
   );

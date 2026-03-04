@@ -87,18 +87,28 @@ export default function SkillsTab() {
   };
 
   return (
-    <div className="tab-pane fade" id="skills-tab" role="tabpanel">
+    <div className="tab-pane active fade show" id="skills-tab" role="tabpanel" aria-labelledby="skills-tab-button">
       <div className="mb-4">
         <button 
-          className="btn-admin-add"
+          className="btn btn-success"
           onClick={() => {
             setEditingSkill(null);
             setShowForm(true);
           }}
         >
-          Ajouter une compétence
+          ➕ Ajouter une compétence
         </button>
       </div>
+
+      {skills.length === 0 ? (
+        <div className="alert alert-info">Aucune compétence. Cliquez sur "Ajouter une compétence" pour en créer une.</div>
+      ) : (
+        <SkillList 
+          skills={skills}
+          onEdit={handleEdit}
+          onDelete={(skill) => setSkillToDelete(skill)}
+        />
+      )}
 
       <AdminModal
         isOpen={showForm}
@@ -119,12 +129,6 @@ export default function SkillsTab() {
         message={skillToDelete ? `Voulez-vous vraiment supprimer « ${skillToDelete.name} » ?` : ''}
         onConfirm={handleDelete}
         onCancel={() => setSkillToDelete(null)}
-      />
-
-      <SkillList 
-        skills={skills}
-        onEdit={handleEdit}
-        onDelete={(skill) => setSkillToDelete(skill)}
       />
     </div>
   );

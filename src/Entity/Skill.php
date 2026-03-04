@@ -43,9 +43,9 @@ class Skill
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): string
     {
-        return $this->type;
+        return (string) ($this->type ?? 'hard');
     }
 
     public function setType(string $type): static
@@ -54,9 +54,9 @@ class Skill
         return $this;
     }
 
-    public function getLevel(): ?int
+    public function getLevel(): int
     {
-        return $this->level;
+        return (int) ($this->level ?? 1);
     }
 
     public function setLevel(int $level): static

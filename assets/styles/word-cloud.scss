@@ -1,0 +1,44 @@
+.skills-clouds-row {
+    margin-bottom: 2.25rem;
+}
+
+.word-cloud-block {
+    padding: 0;
+}
+
+.word-cloud-heading {
+    margin: 0 0 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #10b981;
+}
+
+.word-cloud-stage {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
+    cursor: grab;
+
+    &:active {
+        cursor: grabbing;
+    }
+
+    @media (max-width: 768px) {
+        height: 270px;
+    }
+}
+
+.word-cloud-tag {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    white-space: nowrap;
+    user-select: none;
+    font-weight: 600;
+    line-height: 1;
+    text-shadow: 0 0 12px rgba(30, 234, 208, 0.28);
+    pointer-events: none;
+    will-change: transform, opacity;
+}

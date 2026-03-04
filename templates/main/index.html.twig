@@ -1,97 +1,124 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - Portfolio{% endblock %}
+{% block title %}Portfolio - Développeur Web Full Stack{% endblock %}
 
 {% block body %}
-<div class="container my-5">
-    <section class="hero text-center mb-5">
-        <h1 class="display-4">Bienvenue sur mon Portfolio</h1>
-        <p class="lead">Développeur Web Full Stack</p>
-    </section>
-
-    <section class="skills mb-5">
-        <h2 class="mb-4">Compétences</h2>
-        <div class="row">
-            <div class="col-md-6">
-                <h4>Compétences Techniques</h4>
-                <ul class="list-unstyled">
-                    {% for skill in skills if skill.type == 'hard' %}
-                        <li class="mb-2">
-                            {{ skill.name }}
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" 
-                                     style="width: {{ skill.level * 20 }}%"
-                                     aria-valuenow="{{ skill.level }}" 
-                                     aria-valuemin="0" aria-valuemax="5">
-                                    {{ skill.level }}/5
-                                </div>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+<div class="hero-container">
+    <div class="container">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="hero-greeting">Bonjour,</span>
+                    <span class="hero-name">Adam Macadam</span>
+                    <span class="hero-role">Développeur Full-Stack</span>
+                </h1>
+                
+                <p class="hero-description">
+                    Basé en France, j'adore créer des expériences numériques interactives sur le web.
+                </p>
+                
+                <div class="hero-cta">
+                    <a href="{{ path('app_contact') }}" class="btn btn-outline-success btn-lg">
+                        Prenons contact !
+                    </a>
+                </div>
             </div>
-            <div class="col-md-6">
-                <h4>Compétences Transversales</h4>
-                <ul class="list-unstyled">
-                    {% for skill in skills if skill.type == 'soft' %}
-                        <li class="mb-2">
-                            {{ skill.name }}
-                            <div class="progress">
-                                <div class="progress-bar bg-success" role="progressbar" 
-                                     style="width: {{ skill.level * 20 }}%"
-                                     aria-valuenow="{{ skill.level }}" 
-                                     aria-valuemin="0" aria-valuemax="5">
-                                    {{ skill.level }}/5
-                                </div>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+        </section>
+    </div>
+</div>
+
+<div class="container my-5">
+    <section class="skills mb-5 py-5">
+        <h2 class="mb-4 text-center fw-bold">Compétences</h2>
+
+        {% set hardSkillNames = [] %}
+        {% set softSkillNames = [] %}
+        {% for skill in skills %}
+            {% if skill.getType() == 'hard' %}
+                {% set hardSkillNames = hardSkillNames|merge([skill.name]) %}
+            {% elseif skill.getType() == 'soft' %}
+                {% set softSkillNames = softSkillNames|merge([skill.name]) %}
+            {% endif %}
+        {% endfor %}
+
+        <div class="row g-4 skills-clouds-row">
+            <div class="col-lg-6">
+                <div
+                    data-controller="word-cloud"
+                    data-word-cloud-title-value="Hard Skills"
+                    data-word-cloud-accent-value="#22d3ee"
+                    data-word-cloud-words-value="{{ hardSkillNames|json_encode|e('html_attr') }}"
+                ></div>
+            </div>
+            <div class="col-lg-6">
+                <div
+                    data-controller="word-cloud"
+                    data-word-cloud-title-value="Soft Skills"
+                    data-word-cloud-accent-value="#2dd4bf"
+                    data-word-cloud-words-value="{{ softSkillNames|json_encode|e('html_attr') }}"
+                ></div>
             </div>
         </div>
     </section>
 
-    <section class="projects mb-5">
-        <h2 class="mb-4">Derniers Projets</h2>
+    <section class="projects mb-5 py-5">
+        <h2 class="mb-4 text-center fw-bold">Derniers Projets</h2>
         <div class="row">
             {% for project in projects %}
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        {% if project.images|length > 0 %}
-                            <img src="{{ project.images[0] }}" class="card-img-top" alt="{{ project.title }}">
+                    <div class="card h-100 shadow-sm">
+                        {% if project.getImages()|length > 0 %}
+                            <img src="{{ project.getImages()[0] }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-muted">Pas d'image</span>
+                            </div>
                         {% endif %}
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column">
                             <h5 class="card-title">{{ project.title }}</h5>
-                            <p class="card-text">{{ project.description|slice(0, 100) }}...</p>
-                            <a href="{{ path('app_project_detail', {id: project.id}) }}" class="btn btn-primary">Voir plus</a>
+                            <p class="card-text text-secondary">{{ project.description|slice(0, 100) }}...</p>
+                            {% if project.getTechnologies()|length > 0 %}
+                                <div class="mb-3">
+                                    {% for tech in project.getTechnologies() %}
+                                        <span class="badge bg-success">{{ tech }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <a href="{{ path('app_project_detail', {id: project.id}) }}" class="btn btn-success mt-auto">Voir plus</a>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-        <div class="text-center">
-            <a href="{{ path('app_projects') }}" class="btn btn-outline-primary">Voir tous les projets</a>
+        <div class="text-center mt-4">
+            <a href="{{ path('app_projects') }}" class="btn btn-outline-primary btn-lg">Voir tous les projets</a>
         </div>
     </section>
 
-    <section class="experiences">
-        <h2 class="mb-4">Expériences</h2>
-        {% for experience in experiences %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{ experience.title }} - {{ experience.company }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        {{ experience.startDate|date('m/Y') }} - 
-                        {% if experience.endDate %}
-                            {{ experience.endDate|date('m/Y') }}
-                        {% else %}
-                            Présent
-                        {% endif %}
-                    </h6>
-                    <p class="card-text">{{ experience.description }}</p>
+    <section class="experiences py-5">
+        <h2 class="mb-4 text-center fw-bold">Expériences</h2>
+        <div class="row">
+            {% for experience in experiences %}
+                <div class="col-md-8 offset-md-2 mb-4">
+                    <div class="card shadow-sm border-start" style="border-left-color: #10b981 !important;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: #10b981;">{{ experience.title }}</h5>
+                            <h6 class="card-subtitle mb-2 text-warning">{{ experience.company }}</h6>
+                            <p class="card-text text-secondary">{{ experience.description }}</p>
+                            <small class="text-muted">
+                                <i class="far fa-calendar"></i>
+                                {{ experience.startDate|date('m/Y') }} - 
+                                {% if experience.endDate %}
+                                    {{ experience.endDate|date('m/Y') }}
+                                {% else %}
+                                    <span class="badge bg-success">Actuel</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </section>
 </div>
 {% endblock %}

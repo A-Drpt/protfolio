@@ -1,4 +1,4 @@
-const Encore = Webpack Encore;
+const Encore = require('@symfony/webpack-encore');
 
 if (!Encore.isRuntimeEnvironmentConfigured()) {
     Encore.configureRuntimeEnvironment(process.env.NODE_ENV || 'dev');
@@ -14,16 +14,15 @@ Encore
     .enableStimulusBridge('./assets/controllers.json')
     
     .splitEntryChunks()
+
+    // enables the Symfony UX Stimulus bridge (used in assets/stimulus_bootstrap.js)
+    .enableStimulusBridge('./assets/controllers.json')
     .enableSingleRuntimeChunk()
     
     .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
-    
-    .configureBabel((config) => {
-        config.plugins.push('@babel/plugin-proposal-class-properties');
-    })
     
     .configureBabelPresetEnv((config) => {
         config.useBuiltIns = 'usage';

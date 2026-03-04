@@ -1,12 +1,12 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { AdminDashboard } from './components/AdminDashboard.jsx';
+import { AdminDashboard, useAdmin } from './components/AdminDashboard.jsx';
 import ProjectsTab from './components/ProjectsTab.jsx';
 import SkillsTab from './components/SkillsTab.jsx';
 import ExperiencesTab from './components/ExperiencesTab.jsx';
 
 function App() {
-  const [activeTab, setActiveTab] = React.useState('projects');
+  const { activeTab, setActiveTab } = useAdmin();
 
   return (
     <div className="container-fluid">
