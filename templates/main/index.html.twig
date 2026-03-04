@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Portfolio{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <section class="hero text-center mb-5">
+        <h1 class="display-4">Bienvenue sur mon Portfolio</h1>
+        <p class="lead">Développeur Web Full Stack</p>
+    </section>
+
+    <section class="skills mb-5">
+        <h2 class="mb-4">Compétences</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Compétences Techniques</h4>
+                <ul class="list-unstyled">
+                    {% for skill in skills if skill.type == 'hard' %}
+                        <li class="mb-2">
+                            {{ skill.name }}
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: {{ skill.level * 20 }}%"
+                                     aria-valuenow="{{ skill.level }}" 
+                                     aria-valuemin="0" aria-valuemax="5">
+                                    {{ skill.level }}/5
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h4>Compétences Transversales</h4>
+                <ul class="list-unstyled">
+                    {% for skill in skills if skill.type == 'soft' %}
+                        <li class="mb-2">
+                            {{ skill.name }}
+                            <div class="progress">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ skill.level * 20 }}%"
+                                     aria-valuenow="{{ skill.level }}" 
+                                     aria-valuemin="0" aria-valuemax="5">
+                                    {{ skill.level }}/5
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="projects mb-5">
+        <h2 class="mb-4">Derniers Projets</h2>
+        <div class="row">
+            {% for project in projects %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if project.images|length > 0 %}
+                            <img src="{{ project.images[0] }}" class="card-img-top" alt="{{ project.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ project.title }}</h5>
+                            <p class="card-text">{{ project.description|slice(0, 100) }}...</p>
+                            <a href="{{ path('app_project_detail', {id: project.id}) }}" class="btn btn-primary">Voir plus</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{{ path('app_projects') }}" class="btn btn-outline-primary">Voir tous les projets</a>
+        </div>
+    </section>
+
+    <section class="experiences">
+        <h2 class="mb-4">Expériences</h2>
+        {% for experience in experiences %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ experience.title }} - {{ experience.company }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        {{ experience.startDate|date('m/Y') }} - 
+                        {% if experience.endDate %}
+                            {{ experience.endDate|date('m/Y') }}
+                        {% else %}
+                            Présent
+                        {% endif %}
+                    </h6>
+                    <p class="card-text">{{ experience.description }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}
