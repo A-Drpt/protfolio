@@ -1,0 +1,44 @@
+# Git
+.git
+.github
+.gitignore
+
+# Dependencies
+node_modules/
+vendor/
+
+# Cache & logs
+var/cache/*
+var/log/*
+!var/cache/.gitkeep
+!var/log/.gitkeep
+
+# Environment
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Tests
+tests/
+phpunit.xml.dist
+
+# Build artifacts
+public/build/
+assets/vendor/
+
+# Documentation
+README.md
+*.md
+
+# Mac
+.DS_Store
+
+# Uploads (will be on persistent disk)
+public/uploads/*
+!public/uploads/.gitkeep
