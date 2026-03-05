@@ -116,11 +116,26 @@ p {
 }
 
 // ============================================
+// SECTIONS (SKILLS, PROJECTS, EXPERIENCES)
+// ============================================
+
+.skills,
+.projects,
+.experiences {
+  section {
+    background: transparent !important;
+  }
+
+  h2 {
+    color: $text-primary;
+  }
+}
+
+// ============================================
 // HERO SECTION
 // ============================================
 
 .hero-container {
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
   padding: 120px 0 80px;
   margin-bottom: 60px;
   position: relative;
@@ -137,7 +152,7 @@ p {
     right: -10%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -149,28 +164,29 @@ p {
 }
 
 .hero-content {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 
 .hero-title {
-  font-size: 4.5rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 5.5rem;
+  font-weight: 800;
+  line-height: 1.1;
   margin-bottom: 2rem;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  text-align: left;
 
   @media (max-width: 768px) {
-    font-size: 2.8rem;
+    font-size: 3rem;
   }
 }
 
 .hero-greeting {
   display: block;
   color: $text-secondary;
-  font-size: 1.2em;
+  font-size: 1.1em;
   font-weight: 500;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
 .hero-name {
@@ -184,19 +200,20 @@ p {
   display: block;
   @include gradient-text;
   font-size: 0.9em;
-  font-weight: 600;
-  margin-top: 0.5rem;
+  font-weight: 700;
+  margin-top: 0.3rem;
 }
 
 .hero-description {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: $text-secondary;
   margin-bottom: 2.5rem;
   line-height: 1.6;
-  max-width: 600px;
+  max-width: 500px;
+  text-align: left;
 
   @media (max-width: 768px) {
-    font-size: 1.05rem;
+    font-size: 1rem;
     margin-bottom: 2rem;
   }
 }
@@ -204,6 +221,7 @@ p {
 .hero-cta {
   display: flex;
   gap: 1rem;
+  justify-content: flex-start;
 
   .btn {
     padding: 0.75rem 2.5rem;
@@ -299,16 +317,35 @@ p {
 }
 
 .btn-outline-primary {
-  color: $accent !important;
-  border-color: $accent !important;
+  background: $accent;
+  border-color: $accent;
+  color: $primary !important;
   font-weight: 500;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
   @include smooth-transition;
 
   &:hover {
-    background: $accent;
+    background: transparent;
     border-color: $accent;
-    color: $primary !important;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    color: $accent !important;
+    box-shadow: none;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-outline-success {
+  background: $accent;
+  border-color: $accent;
+  color: $primary !important;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  @include smooth-transition;
+
+  &:hover {
+    background: transparent;
+    border-color: $accent;
+    color: $accent !important;
+    box-shadow: none;
     transform: translateY(-2px);
   }
 }
@@ -338,6 +375,21 @@ p {
     background: $danger;
     color: $primary !important;
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    transform: translateY(-2px);
+  }
+}
+
+.btn-outline-dark {
+  color: $text-secondary !important;
+  border-color: $text-secondary !important;
+  font-weight: 500;
+  @include smooth-transition;
+
+  &:hover {
+    background: $secondary;
+    color: $accent !important;
+    border-color: $accent !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
     transform: translateY(-2px);
   }
 }
@@ -598,6 +650,14 @@ p {
 // MODALS
 // ============================================
 
+.modal {
+  overflow-y: auto;
+}
+
+.modal-dialog {
+  margin: 1rem auto;
+}
+
 .modal-content {
   background: linear-gradient(135deg, rgba(26, 31, 58, 0.95) 0%, rgba(37, 45, 69, 0.85) 100%);
   border: 1px solid rgba(51, 65, 85, 0.4);
@@ -628,6 +688,7 @@ p {
 .table {
   color: $text-primary;
   border-collapse: collapse;
+  background: transparent;
 
   thead th {
     border-color: rgba(51, 65, 85, 0.4);
@@ -639,12 +700,17 @@ p {
     background: rgba(0, 212, 255, 0.05);
   }
 
+  tbody {
+    background: transparent !important;
+  }
+
   tbody tr {
     border-color: rgba(51, 65, 85, 0.2);
+    background: transparent !important;
     @include smooth-transition;
 
     &:hover {
-      background: rgba(0, 212, 255, 0.05);
+      background: rgba(16, 185, 129, 0.1) !important;
       transform: translateX(4px);
     }
   }
@@ -652,7 +718,23 @@ p {
   td {
     padding: 1rem;
     vertical-align: middle;
+    color: $text-primary;
+    background: transparent !important;
   }
+}
+
+// ============================================
+// CARD SUBTITLE & METADATA
+// ============================================
+
+.card-subtitle {
+  &.text-warning {
+    color: $text-secondary !important;
+  }
+}
+
+small.text-muted {
+  color: $text-secondary !important;
 }
 
 // ============================================
@@ -697,6 +779,10 @@ footer {
 // ============================================
 // UTILITY CLASSES
 // ============================================
+
+.text-muted {
+  color: $text-secondary !important;
+}
 
 .text-gradient {
   @include gradient-text;
@@ -752,6 +838,17 @@ footer {
 
 // AdminModal styles
 .admin-modal {
+  --admin-navbar-offset: 92px;
+
+  .modal-dialog {
+    margin: var(--admin-navbar-offset) auto 1rem;
+  }
+
+  .modal-content {
+    max-height: calc(100vh - var(--admin-navbar-offset) - 1.5rem);
+    overflow: hidden;
+  }
+
   .modal-header {
     background: linear-gradient(135deg, $primary 0%, $secondary 100%);
 
@@ -762,10 +859,25 @@ footer {
 
   .modal-body {
     background: $primary;
+    overflow-y: auto;
   }
 
   .modal-footer {
     background: linear-gradient(135deg, $secondary 0%, $tertiary 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-modal {
+    --admin-navbar-offset: 76px;
+
+    .modal-dialog {
+      margin: var(--admin-navbar-offset) 0.5rem 0.5rem;
+    }
+
+    .modal-content {
+      max-height: calc(100vh - var(--admin-navbar-offset) - 1rem);
+    }
   }
 }
 
@@ -1051,5 +1163,12 @@ footer {
 
   &:active {
     transform: translateY(0);
+  }
+}
+
+// Admin card metadata
+.admin-card {
+  p.text-muted {
+    color: $text-secondary !important;
   }
 }

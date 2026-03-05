@@ -40,24 +40,30 @@ class ProjectController extends AbstractController
         EntityManagerInterface $em,
         SluggerInterface $slugger
     ): JsonResponse {
+        $title = (string) ($request->request->get('title') ?? '');
+        $description = (string) ($request->request->get('description') ?? '');
+
+        if ('' === trim($title) || '' === trim($description)) {
+            return $this->json(['error' => 'Le titre et la description sont requis.'], Response::HTTP_BAD_REQUEST);
+        }
+
         $project = new Project();
-        $project->setTitle($request->request->get('title'));
-        $project->setDescription($request->request->get('description'));
+        $project->setTitle($title);
+        $project->setDescription($description);
         
         // Handle technologies (JSON string to array)
         $technologies = json_decode($request->request->get('technologies', '[]'), true);
         $project->setTechnologies($technologies ?? []);
         
-        $project->setGithubLink($request->request->get('githubLink'));
-        $project->setDemoLink($request->request->get('demoLink'));
+        $project->setGithubLink($request->request->get('githubLink') ?? $request->request->get('github_link'));
+        $project->setDemoLink($request->request->get('demoLink') ?? $request->request->get('demo_link'));
 
         // Handle image uploads
         $images = [];
-        /** @var UploadedFile[] $uploadedFiles */
-        $uploadedFiles = $request->files->get('images', []);
+        $uploadedFiles = $this->extractUploadedImages($request);
         
         foreach ($uploadedFiles as $uploadedFile) {
-            if ($uploadedFile) {
+            if ($uploadedFile instanceof UploadedFile && $uploadedFile->isValid()) {
                 $images[] = $this->uploadImage($uploadedFile, $slugger);
             }
         }
@@ -78,24 +84,33 @@ class ProjectController extends AbstractController
         EntityManagerInterface $em,
         SluggerInterface $slugger
     ): JsonResponse {
-        $project = $projectRepository->find($id);
-        
-        if (!$project) {
-            return $this->json(['error' => 'Projet non trouvé'], Response::HTTP_NOT_FOUND);
-        }
+        try {
+            $project = $projectRepository->find($id);
+            
+            if (!$project) {
+                return $this->json(['error' => 'Projet non trouvé'], Response::HTTP_NOT_FOUND);
+            }
 
-        $project->setTitle($request->request->get('title'));
-        $project->setDescription($request->request->get('description'));
+            $title = (string) ($request->request->get('title') ?? $project->getTitle() ?? '');
+            $description = (string) ($request->request->get('description') ?? $project->getDescription() ?? '');
+
+            if ('' === trim($title) || '' === trim($description)) {
+                return $this->json(['error' => 'Le titre et la description sont requis.'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $project->setTitle($title);
+            $project->setDescription($description);
         
         // Handle technologies
         $technologies = json_decode($request->request->get('technologies', '[]'), true);
         $project->setTechnologies($technologies ?? []);
         
-        $project->setGithubLink($request->request->get('githubLink'));
-        $project->setDemoLink($request->request->get('demoLink'));
+        $project->setGithubLink($request->request->get('githubLink') ?? $request->request->get('github_link'));
+        $project->setDemoLink($request->request->get('demoLink') ?? $request->request->get('demo_link'));
 
         // Handle existing images
-        $existingImages = json_decode($request->request->get('existingImages', '[]'), true) ?? [];
+        $existingImagesRaw = $request->request->get('existingImages') ?? $request->request->get('existing_images', '[]');
+        $existingImages = json_decode((string) $existingImagesRaw, true) ?? [];
         
         // Delete images that were removed
         $currentImages = $project->getImages() ?? [];
@@ -109,11 +124,10 @@ class ProjectController extends AbstractController
         $images = $existingImages;
 
         // Handle new image uploads
-        /** @var UploadedFile[] $uploadedFiles */
-        $uploadedFiles = $request->files->get('images', []);
+        $uploadedFiles = $this->extractUploadedImages($request);
         
         foreach ($uploadedFiles as $uploadedFile) {
-            if ($uploadedFile) {
+            if ($uploadedFile instanceof UploadedFile && $uploadedFile->isValid()) {
                 $images[] = $this->uploadImage($uploadedFile, $slugger);
             }
         }
@@ -123,6 +137,9 @@ class ProjectController extends AbstractController
         $em->flush();
 
         return $this->json($project, Response::HTTP_OK, [], ['groups' => 'project:read']);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     #[Route('/{id}', name: 'api_projects_delete', methods: ['DELETE'])]
@@ -150,9 +167,26 @@ class ProjectController extends AbstractController
 
     private function uploadImage(UploadedFile $file, SluggerInterface $slugger): string
     {
+        if (!$file->isValid()) {
+            throw new \RuntimeException('Fichier image invalide.');
+        }
+
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $slugger->slug($originalFilename);
-        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+        
+        // Ensure slug is not empty - use a fallback
+        if (empty($safeFilename)) {
+            $safeFilename = 'image';
+        }
+        
+        $extension = $file->guessExtension() ?: $file->getClientOriginalExtension() ?: 'bin';
+        // Clean extension to remove any invalid characters
+        $extension = preg_replace('/[^a-z0-9]/i', '', $extension);
+        if (empty($extension)) {
+            $extension = 'bin';
+        }
+        
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $extension;
 
         try {
             if (!is_dir($this->uploadsDir)) {
@@ -164,6 +198,37 @@ class ProjectController extends AbstractController
         }
 
         return '/uploads/projects/' . $newFilename;
+    }
+
+    /**
+     * @return UploadedFile[]
+     */
+    private function extractUploadedImages(Request $request): array
+    {
+        $files = [];
+        
+        // Try to get files with 'images[]' key
+        $arrayImages = $request->files->get('images');
+        
+        if (is_array($arrayImages)) {
+            $files = $arrayImages;
+        } elseif ($arrayImages instanceof UploadedFile) {
+            $files = [$arrayImages];
+        }
+        
+        // If nothing found, try all() method
+        if (empty($files)) {
+            $allImages = $request->files->all('images');
+            if ($allImages) {
+                $files = is_array($allImages) ? $allImages : [$allImages];
+            }
+        }
+        
+        // Filter to keep only valid UploadedFile instances
+        return array_values(array_filter(
+            $files,
+            static fn ($file) => $file instanceof UploadedFile
+        ));
     }
 
     private function deleteImage(string $imagePath): void

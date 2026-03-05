@@ -33,6 +33,8 @@ async function request(endpoint, options = {}) {
     ? await response.json() 
     : await response.text();
 
+  console.log('API Response:', { status: response.status, data, endpoint });
+
   if (!response.ok) {
     // If 401, try to refresh token
     if (response.status === 401) {
@@ -42,7 +44,7 @@ async function request(endpoint, options = {}) {
         return request(endpoint, options);
       }
     }
-    throw new ApiError(data.message || 'API Error', response.status, data);
+    throw new ApiError(data?.message || data?.error || 'API Error', response.status, data);
   }
 
   return data;
