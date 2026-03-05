@@ -39,8 +39,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 
 # Copy composer files first for better layer caching
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --no-cache
+COPY composer.json ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --no-cache --ignore-platform-reqs
 
 # Copy package files for Node dependencies
 COPY package.json package-lock.json ./
