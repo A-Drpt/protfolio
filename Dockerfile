@@ -1,5 +1,5 @@
 # Symfony 7 + React Portfolio - Production Docker Image
-FROM php:8.5-fpm-alpine AS base
+FROM php:8.4-fpm-alpine AS base
 
 # Install system dependencies
 RUN apk add --no-cache \
