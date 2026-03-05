@@ -1,5 +1,5 @@
 # Symfony 7 + React Portfolio - Production Docker Image
-FROM php:8.4-fpm-alpine AS base
+FROM php:8.3-fpm-alpine AS base
 
 # Install system dependencies
 RUN apk add --no-cache \
@@ -40,7 +40,7 @@ WORKDIR /app
 
 # Copy composer files first for better layer caching
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --no-cache
 
 # Copy package files for Node dependencies
 COPY package.json package-lock.json ./
