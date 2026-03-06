@@ -66,14 +66,15 @@ RUN mkdir -p var/cache var/log public/uploads/projects && \
     chown -R www-data:www-data var public/uploads && \
     chmod -R 775 var public/uploads
 
-# Copy nginx configuration
-COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
-
 # Copy supervisor configuration
 COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
+
+# Copy and make entrypoint executable
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Expose port
 EXPOSE 8080
 
-# Start supervisor (manages nginx + php-fpm)
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+# Start via entrypoint script (handles migrations + supervisor)
+ENTRYPOINT ["/entrypoint.sh"]
