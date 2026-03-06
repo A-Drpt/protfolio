@@ -1,23 +1,25 @@
 # Symfony 7 + React Portfolio - Production Docker Image
-FROM php:8.3-fpm-alpine AS base
+FROM php:8.3-fpm-bookworm AS base
 
 # Install system dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     curl \
     git \
-    icu-dev \
+    libicu-dev \
     libzip-dev \
     nginx \
     nodejs \
     npm \
-    postgresql-dev \
+    postgresql-client \
     supervisor \
     unzip \
-    zip
+    zip \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install \
+RUN docker-php-ext-configure intl && \
+    docker-php-ext-install \
     intl \
     opcache \
     pdo \
