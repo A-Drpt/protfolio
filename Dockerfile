@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     libicu-dev \
+    libpq-dev \
     libzip-dev \
     nginx \
     nodejs \
