@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# Fix all permissions - make everything writable
+# Create temp directory
+mkdir -p /app/var/tmp
+chmod 777 /app/var/tmp
+
+# Fix all permissions
 chmod -R 777 /app/var 2>/dev/null || true
-chmod -R 777 /tmp 2>/dev/null || true
-chmod -R 777 /app/public/uploads 2>/dev/null || true
 chown -R www-data:www-data /app/var /app/public/uploads 2>/dev/null || true
 
 # Run migrations if DATABASE_URL is set
