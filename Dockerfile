@@ -51,16 +51,17 @@ COPY composer.json ./
 # Create minimal .env to avoid errors
 RUN echo "APP_ENV=prod\nAPP_SECRET=docker-temp-secret" > .env
 
-# Install dependencies WITHOUT running any scripts (they need DB which we don't have yet)
-RUN composer install --no-dev --no-scripts --no-interaction --no-cache --ignore-platform-reqs 2>&1 | grep -v "Script cache:clear" || true
-
 # Copy package files for Node dependencies
 COPY package.json ./
-# Install all dependencies (webpack-encore is needed for build)
-RUN npm install --legacy-peer-deps 2>&1 || true
 
-# Copy application code BEFORE npm build
+# Copy full application code (BEFORE installing composer to avoid vendor overwrite)
 COPY . .
+
+# Install composer dependencies
+RUN composer install --no-dev --no-scripts --no-interaction --no-cache --ignore-platform-reqs 2>&1 | grep -v "Script cache:clear" || true
+
+# Install all npm dependencies (webpack-encore is needed for build)
+RUN npm install --legacy-peer-deps 2>&1 || true
 
 # Build frontend assets - continue even if errors
 RUN npm run build 2>&1 || echo "Build completed with warnings"
