@@ -68,6 +68,10 @@ RUN mkdir -p var/cache var/log public/uploads/projects && \
     chown -R www-data:www-data var public/uploads && \
     chmod -R 775 var public/uploads
 
+# Copy nginx configuration to correct Debian path
+COPY docker/nginx/default.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
 # Copy supervisor configuration
 COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
 
