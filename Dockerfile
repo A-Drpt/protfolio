@@ -56,9 +56,8 @@ COPY . .
 # Build frontend assets
 RUN npm run build
 
-# Finish Composer installation with scripts
-RUN composer install --no-dev --optimize-autoloader --no-interaction && \
-    composer dump-autoload --optimize --classmap-authoritative
+# Finish Composer installation with scripts (skip scripts first time since we copied only composer.json)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-cache --ignore-platform-reqs
 
 # Create necessary directories with correct permissions
 RUN mkdir -p var/cache var/log public/uploads/projects && \
