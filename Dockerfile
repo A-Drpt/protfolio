@@ -44,10 +44,11 @@ WORKDIR /app
 # Copy composer files first for better layer caching
 COPY composer.json ./
 
-# Create minimal .env to avoid errors during composer install
+# Create minimal .env to avoid errors
 RUN echo "APP_ENV=prod\nAPP_SECRET=docker-temp-secret" > .env
 
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --no-cache --ignore-platform-reqs
+# Install dependencies WITHOUT running any scripts (they need DB which we don't have yet)
+RUN composer install --no-dev --no-scripts --no-interaction --no-cache --ignore-platform-reqs 2>&1 | grep -v "Script cache:clear" || true
 
 # Copy package files for Node dependencies
 COPY package.json ./
@@ -60,10 +61,7 @@ COPY . .
 # Build frontend assets
 RUN npm run build
 
-# Finish Composer installation with scripts (skip scripts first time since we copied only composer.json)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-cache --ignore-platform-reqs
-
-# Create necessary directories with correct permissions
+# Create necessary directories (cache/logs will be created at runtime)
 RUN mkdir -p var/cache var/log public/uploads/projects && \
     chown -R www-data:www-data var public/uploads && \
     chmod -R 775 var public/uploads
