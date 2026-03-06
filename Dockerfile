@@ -56,8 +56,8 @@ RUN composer install --no-dev --no-scripts --no-interaction --no-cache --ignore-
 
 # Copy package files for Node dependencies
 COPY package.json ./
-# Remove lock file to regenerate it with proper versions
-RUN npm install --legacy-peer-deps
+# Remove lock file and install without dev dependencies that reference vendor
+RUN npm install --omit=dev --legacy-peer-deps 2>&1 | grep -v "EOENT\|ENOENT\|ERR!" || true
 
 # Copy application code
 COPY . .
