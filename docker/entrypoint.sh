@@ -1,17 +1,11 @@
 #!/bin/bash
 
-# Create temp directory
-mkdir -p /app/var/tmp
-chmod 777 /app/var/tmp
+# Make EVERYTHING writable immediately
+chmod -R 777 /app/var /app/public 2>/dev/null || true
+chown -R www-data:www-data /app/var /app/public 2>/dev/null || true
 
-# Fix all permissions
-chmod -R 777 /app/var 2>/dev/null || true
-chown -R www-data:www-data /app/var /app/public/uploads 2>/dev/null || true
-
-# Run migrations if DATABASE_URL is set
-if [ ! -z "$DATABASE_URL" ]; then
-    php /app/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>/dev/null || true
-fi
+# Run migrations
+[ ! -z "$DATABASE_URL" ] && php /app/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration 2>/dev/null || true
 
 # Start supervisor
 exec /usr/bin/supervisord -c /etc/supervisord.conf

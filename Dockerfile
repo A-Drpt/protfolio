@@ -36,9 +36,7 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
     echo "opcache.max_accelerated_files=20000" >> "$PHP_INI_DIR/conf.d/opcache.ini" && \
     echo "opcache.validate_timestamps=0" >> "$PHP_INI_DIR/conf.d/opcache.ini" && \
     echo "upload_max_filesize=10M" >> "$PHP_INI_DIR/conf.d/uploads.ini" && \
-    echo "post_max_size=10M" >> "$PHP_INI_DIR/conf.d/uploads.ini" && \
-    echo "sys_temp_dir=/app/var/tmp" >> "$PHP_INI_DIR/conf.d/uploads.ini" && \
-    echo "upload_tmp_dir=/app/var/tmp" >> "$PHP_INI_DIR/conf.d/uploads.ini"
+    echo "post_max_size=10M" >> "$PHP_INI_DIR/conf.d/uploads.ini"
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
