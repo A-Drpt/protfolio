@@ -16,7 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor \
     unzip \
     zip \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/sites-enabled/default \
+    && rm -f /etc/nginx/sites-available/default
 
 # Install PHP extensions
 RUN docker-php-ext-configure intl && \
