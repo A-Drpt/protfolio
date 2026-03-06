@@ -46,8 +46,9 @@ COPY composer.json ./
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --no-cache --ignore-platform-reqs
 
 # Copy package files for Node dependencies
-COPY package.json package-lock.json ./
-RUN npm ci --production=false
+COPY package.json ./
+# Remove lock file to regenerate it with proper versions
+RUN npm install --legacy-peer-deps
 
 # Copy application code
 COPY . .
