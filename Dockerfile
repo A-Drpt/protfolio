@@ -39,32 +39,31 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
     echo "post_max_size=10M" >> "$PHP_INI_DIR/conf.d/uploads.ini" && \
     echo "sys_temp_dir=/app/var/cache" >> "$PHP_INI_DIR/conf.d/uploads.ini" && \
     echo "upload_tmp_dir=/app/var/cache" >> "$PHP_INI_DIR/conf.d/uploads.ini" && \
-    echo "open_basedir=/app:/usr/local/lib/php:/proc/self/fd" >> "$PHP_INI_DIR/conf.d/uploads.ini"
+    echo "open_basedir=/app:/usr/local/lib/php:/usr/local/bin:/usr/bin:/proc/self/fd" >> "$PHP_INI_DIR/conf.d/uploads.ini"
 
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install Composer into a location allowed by open_basedir
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+RUN chmod +x /usr/local/bin/composer || true
 
 WORKDIR /app
 
 # Copy composer files first for better layer caching
-COPY composer.json ./
+COPY composer.json composer.lock ./
 
 # Create minimal .env to avoid errors
 RUN echo "APP_ENV=prod\nAPP_SECRET=docker-temp-secret" > .env
 
-# Copy package files for Node dependencies
-COPY package.json ./
+# Install composer dependencies early (build-time)
+RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction --no-cache --ignore-platform-reqs 2>&1 | grep -v "Script cache:clear" || true
 
-# Copy full application code (BEFORE installing composer to avoid vendor overwrite)
+# Copy package files for Node dependencies (lockfile for deterministic install)
+COPY package.json package-lock.json ./
+
+# Copy full application code after installing PHP deps
 COPY . .
 
-# Install composer dependencies
-RUN composer install --no-dev --no-scripts --no-interaction --no-cache --ignore-platform-reqs 2>&1 | grep -v "Script cache:clear" || true
-
-# Install all npm dependencies (webpack-encore is needed for build)
-RUN npm install --legacy-peer-deps 2>&1 || true
-
-# Build frontend assets - continue even if errors
+# Install all npm dependencies and build frontend assets
+RUN npm ci --legacy-peer-deps --silent 2>&1 || true
 RUN npm run build 2>&1 || echo "Build completed with warnings"
 
 # Create necessary directories (cache/logs will be created at runtime)
