@@ -43,6 +43,10 @@ WORKDIR /app
 
 # Copy composer files first for better layer caching
 COPY composer.json ./
+
+# Create minimal .env to avoid errors during composer install
+RUN echo "APP_ENV=prod\nAPP_SECRET=docker-temp-secret" > .env
+
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --no-cache --ignore-platform-reqs
 
 # Copy package files for Node dependencies
